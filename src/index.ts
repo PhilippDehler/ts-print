@@ -120,6 +120,29 @@ export type PrintArray<
   ? PrintArray<Tail, `${TAgg extends "[" ? TAgg : `${TAgg}, `}${Print<Head>}`>
   : `${TAgg}]`;
 
+/**
+ * Print
+ * - Print<never> => "never"
+ * - Print<any> => "any"
+ * - Print<unknown> => "unknown"
+ * - Print<unknown | any> => "any"
+ * - Print<undefined> => "undefined"
+ * - Print<void> => "void"
+ * - Print<null> => "null"
+ * - Print<bigint> => "bigint"
+ * - Print<number> => "number"
+ * - Print<boolean> => "boolean"
+ * - Print<string> => "string"
+ * - Print<symbol> => "[symbol]"
+ * - Print<[1, 2, 3]> => "[1, 2, 3]"
+ * - Print<[1, 2, 3, [4, 5]]> => "[1, 2, 3, [4, 5]]"
+ * - Print<(...args: [number, number]) => number> => `(...args:[${number}, ${number}]) => ${number}`
+ * - Print<(...args: [number, any]) => number> => `(...args:[${number}, any]) => ${number}`
+ * - Print<{ a: number, b: string }> => "[object object]"
+ * - Print<{ a: number, b: string, c: { d: number, e: string } }> => "[object object]"
+ * - Print<{ a: number, b: string, c: { d: number, e: string }, f: [1, 2, 3] }> => "[object object]"
+ *
+ */
 export type Print<T> = [T] extends [never]
   ? "never"
   : [PrintAnyOrUnknown<T>] extends [never]
@@ -145,7 +168,14 @@ export type Print<T> = [T] extends [never]
     ? "[object object]"
     : PrintError<"UNPRINTABLE", "Can't print type">
   : PrintAnyOrUnknown<T>;
-
+/**
+ * PrintObjectTypes
+ * - PrintObjectTypes<{ a: number, b: string }> => { a: number, b: string }
+ * - PrintObjectTypes<{ a: number, b: string, c: { d: number, e: string } }> => { a: number, b: string, c: { d: number, e: string } }
+ * - PrintObjectTypes<{ a: number, b: string, c: { d: number, e: string }, f: [1, 2, 3] }> => { a: number, b: string, c: { d: number, e: string }, f: [1, 2, 3] }
+ *
+ *
+ */
 export type PrintObjectTypes<T> = Print<T> extends "[object object]"
   ? { [K in keyof T]: PrintObjectTypes<T[K]> }
   : Print<T>;
