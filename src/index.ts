@@ -37,7 +37,9 @@ export type PrintVoid<T extends void> = T extends undefined
  * PrintUndefinied
  * - PrintUndefinied<undefined> => "undefined"
  */
-export type PrintUndefinied<T extends undefined> = `undefined`;
+export type PrintUndefinied<T extends undefined> = T extends undefined
+  ? `undefined`
+  : never;
 
 /**
  * PrintVoidOrUndefinied
